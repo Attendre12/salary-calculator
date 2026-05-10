@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { RotateCcw } from 'lucide-react';
 import { Header } from './components/Header';
 import { SalaryInput } from './components/SalaryInput';
@@ -7,29 +6,6 @@ import { SpecialDeductionsPanel } from './components/SpecialDeductions';
 import { ResultCard } from './components/ResultCard';
 import { IncomeChart } from './components/IncomeChart';
 import { useSalaryCalc } from './hooks/useSalaryCalc';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.03,
-      delayChildren: 0.03,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-    },
-  },
-};
 
 function App() {
   const {

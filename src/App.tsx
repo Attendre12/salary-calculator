@@ -53,51 +53,35 @@ function App() {
     <div className="min-h-screen pb-6">
       <Header />
 
-      <main className="px-4 max-w-lg mx-auto">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col gap-3"
-        >
+      <main className="px-4 max-w-lg mx-auto flex flex-col gap-3">
           {/* 结果展示 */}
-          <motion.div variants={itemVariants}>
-            <ResultCard result={result} />
-          </motion.div>
+          <ResultCard result={result} />
 
           {/* 收入构成图表 */}
-          <motion.div variants={itemVariants}>
-            <IncomeChart data={incomeBreakdown} grossSalary={result.grossSalary} />
-          </motion.div>
+          <IncomeChart data={incomeBreakdown} grossSalary={result.grossSalary} />
 
           {/* 输入区域 */}
-          <motion.div variants={itemVariants}>
-            <SalaryInput value={grossSalary} onChange={setGrossSalary} />
-          </motion.div>
+          <SalaryInput value={grossSalary} onChange={setGrossSalary} />
 
           {/* 五险一金折叠面板 */}
-          <motion.div variants={itemVariants}>
-            <InsuranceConfigPanel
-              base={insuranceBase}
-              onBaseChange={setInsuranceBase}
-              config={insuranceConfig}
-              onConfigChange={updateInsuranceConfig}
-              city={city}
-              onCityChange={setCity}
-              cityLimits={cityLimits}
-            />
-          </motion.div>
+          <InsuranceConfigPanel
+            base={insuranceBase}
+            onBaseChange={setInsuranceBase}
+            config={insuranceConfig}
+            onConfigChange={updateInsuranceConfig}
+            city={city}
+            onCityChange={setCity}
+            cityLimits={cityLimits}
+          />
 
           {/* 专项扣除折叠面板 */}
-          <motion.div variants={itemVariants}>
-            <SpecialDeductionsPanel
-              deductions={specialDeductions}
-              onUpdate={updateSpecialDeduction}
-            />
-          </motion.div>
+          <SpecialDeductionsPanel
+            deductions={specialDeductions}
+            onUpdate={updateSpecialDeduction}
+          />
 
           {/* 重置按钮 */}
-          <motion.div variants={itemVariants} className="flex justify-center">
+          <div className="flex justify-center">
             <button
               onClick={resetAll}
               className="text-[var(--text-tertiary)] text-xs hover:text-[var(--text-secondary)] transition-colors duration-200 flex items-center gap-1 py-2"
@@ -105,8 +89,7 @@ function App() {
               <RotateCcw className="w-3 h-3" />
               重置
             </button>
-          </motion.div>
-        </motion.div>
+          </div>
       </main>
 
       {/* 底部信息 */}

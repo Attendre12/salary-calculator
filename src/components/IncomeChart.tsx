@@ -8,13 +8,18 @@ import {
   type TooltipProps,
 } from 'recharts';
 import type { IncomeBreakdown } from '../types';
-import { CHART_COLORS } from '../utils/constants';
 import { formatMoney } from '../utils/taxCalculator';
 
 interface IncomeChartProps {
   data: IncomeBreakdown[];
   grossSalary: number;
 }
+
+const PIE_COLORS: Record<string, string> = {
+  '税后工资': '#22D3EE',
+  '个人所得税': '#F87171',
+  '五险一金': '#A78BFA',
+};
 
 interface CustomTooltipPayloadEntry {
   payload: IncomeBreakdown;
@@ -28,12 +33,16 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (active && payload && payload.length > 0) {
     const item = payload[0].payload;
     return (
-      <div className="glass-card p-2.5 border border-white/20 shadow-lg">
-        <p className="text-white font-medium text-xs">{item.name}</p>
-        <p className="text-cyan-400 font-digital text-sm">
+      <div className="card px-3 py-2 shadow-lg">
+        <p className="text-[var(--text-primary)] text-xs font-medium">
+          {item.name}
+        </p>
+        <p className="text-accent font-mono text-sm mt-0.5">
           &yen;{formatMoney(item.value)}
         </p>
-        <p className="text-white/50 text-[10px]">{item.percentage}%</p>
+        <p className="text-[var(--text-tertiary)] text-[10px] mt-0.5">
+          {item.percentage}%
+        </p>
       </div>
     );
   }
@@ -48,8 +57,7 @@ function CenterLabel({
   if (!netSalaryItem) return null;
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-      <span className="text-white/40 text-[10px]">税后</span>
-      <span className="neon-text font-digital font-bold text-sm">
+      <span className="text-accent font-mono font-semibold text-sm">
         &yen;{formatMoney(netSalaryItem.value)}
       </span>
     </div>
@@ -66,21 +74,26 @@ export function IncomeChart({ data, grossSalary }: IncomeChartProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="glass-card p-4 mb-3"
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className="card p-4"
     >
+      {/* 标题 */}
+      <p className="text-[var(--text-secondary)] text-[13px] mb-3">
+        收入构成
+      </p>
+
       {/* 环形图 */}
-      <div className="relative h-[120px] mb-3">
+      <div className="relative h-[140px] mb-3">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={chartData}
               cx="50%"
               cy="50%"
-              innerRadius={32}
-              outerRadius={50}
+              innerRadius={40}
+              outerRadius={58}
               paddingAngle={2}
               dataKey="value"
               animationBegin={0}
@@ -90,9 +103,8 @@ export function IncomeChart({ data, grossSalary }: IncomeChartProps) {
               {chartData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={entry.color}
-                  stroke="rgba(255,255,255,0.06)"
-                  strokeWidth={1}
+                  fill={PIE_COLORS[entry.name] || '#666'}
+                  stroke="none"
                 />
               ))}
             </Pie>
@@ -102,36 +114,24 @@ export function IncomeChart({ data, grossSalary }: IncomeChartProps) {
         <CenterLabel netSalaryItem={netSalaryItem} />
       </div>
 
-      {/* 紧凑图例 - 一行一个 */}
-      <div className="space-y-1.5">
-        {chartData.map((item) => {
-          const barColor =
-            item.name === '税后工资'
-              ? CHART_COLORS.netSalary
-              : item.name === '个人所得税'
-                ? CHART_COLORS.tax
-                : CHART_COLORS.insurance;
-
-          return (
-            <div key={item.name} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: barColor }}
-                />
-                <span className="text-white/60 text-xs">{item.name}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-white/30 text-[10px] font-digital">
-                  {item.percentage}%
-                </span>
-                <span className="text-white/80 font-digital text-xs">
-                  &yen;{formatMoney(item.value)}
-                </span>
-              </div>
+      {/* 图例 */}
+      <div className="space-y-2">
+        {chartData.map((item) => (
+          <div key={item.name} className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ backgroundColor: PIE_COLORS[item.name] || '#666' }}
+              />
+              <span className="text-[var(--text-secondary)] text-xs">
+                {item.name}
+              </span>
             </div>
-          );
-        })}
+            <span className="text-[var(--text-primary)] font-mono text-xs">
+              &yen;{formatMoney(item.value)}
+            </span>
+          </div>
+        ))}
       </div>
     </motion.div>
   );

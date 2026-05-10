@@ -4,27 +4,23 @@ const GITHUB_URL = 'https://github.com/Attendre12/salary-calculator';
 
 export function Header() {
   return (
-    <header className="flex items-center justify-between px-4 py-3 mb-3">
-      {/* Logo + 标题 */}
-      <div className="flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-          <Calculator className="w-4 h-4 text-white" />
-        </div>
-        <h1 className="gradient-text font-bold text-base leading-none">
+    <header className="flex items-center justify-between px-4 h-[44px]">
+      <div className="flex items-center gap-2">
+        <Calculator className="w-6 h-6 text-[var(--text-tertiary)]" />
+        <h1 className="text-[15px] font-semibold text-[var(--text-primary)] leading-none">
           税后工资计算器
         </h1>
       </div>
 
-      {/* GitHub 链接 */}
       <a
         href={GITHUB_URL}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="GitHub 仓库"
-        className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 hover:border-cyan-500/30 transition-all duration-200"
+        className="text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors duration-200"
       >
         <svg
-          className="w-3.5 h-3.5"
+          className="w-[18px] h-[18px]"
           viewBox="0 0 24 24"
           fill="currentColor"
           aria-hidden="true"

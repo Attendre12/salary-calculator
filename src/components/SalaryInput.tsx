@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { QUICK_SALARY_OPTIONS } from '../utils/constants';
 import { formatMoney } from '../utils/taxCalculator';
@@ -13,8 +13,6 @@ const SALARY_MAX = 9_999_999;
 const SLIDER_STEP = 100;
 
 export function SalaryInput({ value, onChange }: SalaryInputProps) {
-  const [isFocused, setIsFocused] = useState(false);
-
   const clampValue = useCallback(
     (num: number): number =>
       Math.min(SALARY_MAX, Math.max(SALARY_MIN, Math.round(num))),
@@ -41,7 +39,6 @@ export function SalaryInput({ value, onChange }: SalaryInputProps) {
   );
 
   const handleBlur = useCallback(() => {
-    setIsFocused(false);
     onChange(clampValue(value));
   }, [value, onChange, clampValue]);
 
@@ -50,46 +47,42 @@ export function SalaryInput({ value, onChange }: SalaryInputProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="glass-card p-4 mb-3"
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className="card p-4"
     >
-      {/* 单行输入：标签 + 输入框 */}
-      <div className="flex items-center gap-3 mb-3">
-        <label className="text-white/60 text-sm shrink-0">税前工资</label>
-        <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-sm font-digital select-none">
-            &yen;
-          </span>
-          <input
-            type="text"
-            inputMode="decimal"
-            value={value ? formatMoney(value) : ''}
-            onChange={handleInputChange}
-            onFocus={() => setIsFocused(true)}
-            onBlur={handleBlur}
-            placeholder="请输入税前工资"
-            aria-label="税前月薪金额"
-            className="input-glow w-full h-10 pl-8 pr-14 text-base font-digital"
-            style={
-              isFocused
-                ? {
-                    borderColor: 'var(--primary)',
-                    boxShadow:
-                      '0 0 0 2px rgba(0,212,255,0.1), 0 0 20px rgba(0,212,255,0.15)',
-                  }
-                : undefined
-            }
-          />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 text-xs font-medium select-none">
-            元/月
-          </span>
-        </div>
+      {/* 标签 */}
+      <label className="text-[var(--text-secondary)] text-[13px] mb-2 block">
+        税前月薪
+      </label>
+
+      {/* 输入行 */}
+      <div className="flex items-center gap-2">
+        <span className="text-[var(--text-tertiary)] text-lg font-mono select-none">
+          &yen;
+        </span>
+        <input
+          type="text"
+          inputMode="decimal"
+          value={value ? formatMoney(value) : ''}
+          onChange={handleInputChange}
+          onFocus={() => {}}
+          onBlur={handleBlur}
+          placeholder="请输入税前工资"
+          aria-label="税前月薪金额"
+          className="input flex-1 text-[24px] font-mono font-semibold text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] h-12 px-0 border-0 bg-transparent focus:ring-0 focus:outline-none"
+          style={{
+            caretColor: 'var(--accent)',
+          }}
+        />
+        <span className="text-[var(--text-tertiary)] text-[13px] shrink-0">
+          元/月
+        </span>
       </div>
 
-      {/* 滑动条 */}
-      <div className="mb-2.5 px-0.5">
+      {/* Range Slider */}
+      <div className="mt-3">
         <input
           type="range"
           min={SALARY_MIN}
@@ -98,53 +91,46 @@ export function SalaryInput({ value, onChange }: SalaryInputProps) {
           value={value}
           onChange={handleSliderChange}
           aria-label="工资滑动调节"
-          className="w-full h-1.5 appearance-none rounded-full cursor-pointer"
+          className="w-full h-1 appearance-none rounded-full cursor-pointer"
           style={{
-            background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${sliderPercent}%, rgba(255,255,255,0.08) ${sliderPercent}%, rgba(255,255,255,0.08) 100%)`,
+            background: `linear-gradient(to right, var(--accent) 0%, var(--accent) ${sliderPercent}%, var(--border) ${sliderPercent}%, var(--border) 100%)`,
           }}
         />
         <style>{`
           input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            background: var(--primary);
+            background: var(--accent);
             border: 2px solid var(--bg-primary);
-            box-shadow: 0 0 8px rgba(0,212,255,0.4);
             cursor: pointer;
-            transition: box-shadow 0.2s ease, transform 0.2s ease;
+            transition: transform 0.15s ease;
           }
           input[type="range"]::-webkit-slider-thumb:hover {
-            box-shadow: 0 0 12px rgba(0,212,255,0.6);
-            transform: scale(1.1);
+            transform: scale(1.15);
           }
           input[type="range"]::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            background: var(--primary);
+            background: var(--accent);
             border: 2px solid var(--bg-primary);
-            box-shadow: 0 0 8px rgba(0,212,255,0.4);
             cursor: pointer;
           }
         `}</style>
       </div>
 
-      {/* 快捷档位按钮 */}
-      <div className="flex gap-1.5">
+      {/* 快捷档位 */}
+      <div className="flex gap-1.5 mt-3">
         {QUICK_SALARY_OPTIONS.map((option) => {
           const isActive = value === option.value;
           return (
             <button
               key={option.value}
               onClick={() => onChange(option.value)}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-medium font-digital transition-all duration-200 ${
-                isActive
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-[0_0_10px_rgba(0,212,255,0.15)]'
-                  : 'bg-white/[0.03] text-white/40 border border-white/[0.06] hover:bg-white/[0.06] hover:text-white/60'
-              }`}
+              className={`btn-chip ${isActive ? 'active' : ''} font-mono`}
               aria-pressed={isActive}
             >
               {option.label}

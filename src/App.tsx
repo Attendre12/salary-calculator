@@ -13,20 +13,20 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.05,
+      staggerChildren: 0.03,
+      delayChildren: 0.03,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 12 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.4,
-      cubicBezier: [0.16, 1, 0.3, 1],
+      duration: 0.3,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
     },
   },
 };
@@ -58,13 +58,12 @@ function App() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
+          className="flex flex-col gap-3"
         >
-          {/* 结果展示 - 最上面 */}
+          {/* 结果展示 */}
           <motion.div variants={itemVariants}>
             <ResultCard result={result} />
           </motion.div>
-
-          {/* 个税和五险一金小卡片已内嵌在 ResultCard 中 */}
 
           {/* 收入构成图表 */}
           <motion.div variants={itemVariants}>
@@ -98,22 +97,20 @@ function App() {
           </motion.div>
 
           {/* 重置按钮 */}
-          <motion.div variants={itemVariants}>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+          <motion.div variants={itemVariants} className="flex justify-center">
+            <button
               onClick={resetAll}
-              className="w-full h-10 mt-2 mb-4 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white/50 text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-white/[0.06] hover:text-white/70 hover:border-white/10 transition-all duration-200"
+              className="text-[var(--text-tertiary)] text-xs hover:text-[var(--text-secondary)] transition-colors duration-200 flex items-center gap-1 py-2"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-3 h-3" />
               重置
-            </motion.button>
+            </button>
           </motion.div>
         </motion.div>
       </main>
 
-      {/* 底部信息 - 简单一行 */}
-      <p className="text-center text-white/20 text-[10px] mt-2">
+      {/* 底部信息 */}
+      <p className="text-center text-[var(--text-tertiary)] text-[10px] mt-4 pb-6">
         基于 2024 年最新个税政策 · 覆盖 25 个城市
       </p>
     </div>

@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { Receipt, Shield } from 'lucide-react';
 import type { CalculationResult } from '../types';
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { formatMoney, formatPercent } from '../utils/taxCalculator';
@@ -24,49 +23,51 @@ export function ResultCard({ result }: ResultCardProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="text-center mb-3"
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className="card p-6"
     >
-      {/* 核心结果 - 超大字号渐变色 */}
-      <div className="mb-1">
-        <div className="flex items-baseline justify-center gap-1.5">
-          <span className="text-white/50 text-2xl font-digital">&yen;</span>
-          <span className="text-5xl font-bold gradient-text font-digital">
+      {/* 核心金额区 */}
+      <div className="text-center">
+        <p className="text-[var(--text-tertiary)] text-xs tracking-wider uppercase mb-1">
+          税后到手
+        </p>
+        <div className="flex items-baseline justify-center gap-1">
+          <span className="text-[var(--text-tertiary)] text-2xl font-mono">
+            &yen;
+          </span>
+          <span className="text-gradient text-[40px] font-bold font-mono leading-tight">
             {formatMoney(animatedNetSalary)}
           </span>
         </div>
-        <p className="text-white/40 text-sm mt-1">
-          税后到手
-          {result.taxRate > 0 && (
-            <span className="ml-1.5">
-              &middot; 税率{formatPercent(result.taxRate)}
-            </span>
-          )}
-        </p>
+        {result.taxRate > 0 && (
+          <p className="text-[var(--text-tertiary)] text-[13px] mt-1">
+            适用税率 {formatPercent(result.taxRate)}
+          </p>
+        )}
       </div>
 
-      {/* 个税和五险一金并排小卡片 */}
-      <div className="grid grid-cols-2 gap-2.5">
-        <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] px-3 py-2.5">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Receipt className="w-3 h-3 text-pink-400/70" />
-            <span className="text-white/50 text-xs">个人所得税</span>
-          </div>
-          <span className="text-lg font-bold font-digital text-pink-300">
-            &yen;{formatMoney(animatedTax)}
-          </span>
-        </div>
+      {/* 分割线 */}
+      <div className="my-4 border-t border-[var(--border)]" />
 
-        <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] px-3 py-2.5">
-          <div className="flex items-center gap-1.5 mb-1">
-            <Shield className="w-3 h-3 text-purple-400/70" />
-            <span className="text-white/50 text-xs">五险一金</span>
-          </div>
-          <span className="text-lg font-bold font-digital text-purple-300">
+      {/* 两列网格 */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <p className="text-[var(--text-secondary)] text-xs mb-0.5">
+            个人所得税
+          </p>
+          <p className="text-[var(--text-primary)] text-lg font-semibold font-mono">
+            &yen;{formatMoney(animatedTax)}
+          </p>
+        </div>
+        <div>
+          <p className="text-[var(--text-secondary)] text-xs mb-0.5">
+            五险一金
+          </p>
+          <p className="text-[var(--text-primary)] text-lg font-semibold font-mono">
             &yen;{formatMoney(animatedInsurance)}
-          </span>
+          </p>
         </div>
       </div>
     </motion.div>

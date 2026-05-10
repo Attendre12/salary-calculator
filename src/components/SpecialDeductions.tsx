@@ -31,7 +31,6 @@ interface DeductionItem {
   key: keyof SpecialDeductionsType;
   label: string;
   icon: typeof Baby;
-  color: string;
   hasCount?: boolean;
   countKey?: keyof SpecialDeductionsType;
   maxCount?: number;
@@ -62,7 +61,6 @@ export function SpecialDeductionsPanel({
       key: 'childrenEducation',
       label: '子女教育',
       icon: Baby,
-      color: '#FF6B9D',
       hasCount: true,
       countKey: 'childrenCount',
       maxCount: MAX_CHILDREN_COUNT,
@@ -71,7 +69,6 @@ export function SpecialDeductionsPanel({
       key: 'continuingEducation',
       label: '继续教育',
       icon: BookOpen,
-      color: '#60A5FA',
       options: [
         { label: '无', value: 0 },
         { label: '学历 400/月', value: 400 },
@@ -82,7 +79,6 @@ export function SpecialDeductionsPanel({
       key: 'housingLoan',
       label: '住房贷款',
       icon: Home,
-      color: '#34D399',
       options: [
         { label: '无', value: 0 },
         { label: '1000/月', value: 1000 },
@@ -94,7 +90,6 @@ export function SpecialDeductionsPanel({
       key: 'housingRent',
       label: '住房租金',
       icon: Home,
-      color: '#FBBF24',
       options: [
         { label: '无', value: 0 },
         { label: '1500/月', value: 1500 },
@@ -108,7 +103,6 @@ export function SpecialDeductionsPanel({
       key: 'elderlyCare',
       label: '赡养老人',
       icon: Users,
-      color: '#A78BFA',
       options: [
         { label: '无', value: 0 },
         { label: '独生 2000/月', value: 2000 },
@@ -119,7 +113,6 @@ export function SpecialDeductionsPanel({
       key: 'infantCare',
       label: '婴幼儿照护',
       icon: Heart,
-      color: '#22D3EE',
       hasCount: true,
       countKey: 'infantCount',
       maxCount: MAX_INFANT_COUNT,
@@ -139,22 +132,19 @@ export function SpecialDeductionsPanel({
   ).length;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="glass-card mb-3 overflow-hidden"
-    >
-      {/* 折叠标题栏 - 显示摘要 */}
+    <div className="card overflow-hidden">
+      {/* 折叠触发器 */}
       <div
-        className="flex items-center justify-between cursor-pointer px-4 py-3"
+        className="collapse-trigger"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center gap-2.5">
-          <span className="text-white/70 text-sm">专项扣除</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[var(--text-primary)] text-sm">
+            专项附加扣除
+          </span>
           {totalDeduction > 0 && (
-            <span className="text-cyan-400/80 text-sm font-digital font-medium">
-              已启用{activeCount}项 &yen;{totalDeduction.toLocaleString()}
+            <span className="text-accent font-mono text-sm font-medium">
+              {activeCount}项 &yen;{totalDeduction.toLocaleString()}
             </span>
           )}
         </div>
@@ -162,10 +152,11 @@ export function SpecialDeductionsPanel({
           animate={{ rotate: isExpanded ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown className="w-4 h-4 text-white/40" />
+          <ChevronDown className="w-4 h-4 text-[var(--text-tertiary)]" />
         </motion.div>
       </div>
 
+      {/* 展开内容 */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -175,7 +166,7 @@ export function SpecialDeductionsPanel({
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 space-y-2">
+            <div className="px-4 pt-4 pb-4 space-y-2">
               {/* 互斥提示 */}
               <AnimatePresence>
                 {(isHousingLoanActive || isHousingRentActive) && (
@@ -183,17 +174,17 @@ export function SpecialDeductionsPanel({
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="flex items-center gap-1.5 rounded-lg bg-amber-500/10 border border-amber-500/15 px-2.5 py-1.5"
+                    className="flex items-center gap-1.5 rounded-lg border border-[var(--warning)]/20 bg-[var(--warning)]/5 px-2.5 py-1.5"
                   >
-                    <AlertTriangle className="w-3 h-3 text-amber-400/70 shrink-0" />
-                    <p className="text-amber-300/70 text-[10px] leading-relaxed">
+                    <AlertTriangle className="w-3 h-3 text-[var(--warning)] shrink-0" />
+                    <p className="text-[var(--warning)] text-[10px] leading-relaxed">
                       住房贷款利息与住房租金互斥，不可同时享受
                     </p>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* 各项扣除 - 每项一行：图标+名称 | 选项 | 金额 */}
+              {/* 各项扣除 */}
               {deductionItems.map((item) => {
                 const monthlyAmount = getMonthlyAmount(item);
                 const Icon = item.icon;
@@ -207,11 +198,10 @@ export function SpecialDeductionsPanel({
                   >
                     {/* 图标 + 名称 */}
                     <div className="flex items-center gap-1.5 w-20 shrink-0">
-                      <Icon
-                        className="w-3.5 h-3.5 shrink-0"
-                        style={{ color: `${item.color}99` }}
-                      />
-                      <span className="text-white/70 text-xs">{item.label}</span>
+                      <Icon className="w-4 h-4 text-[var(--text-tertiary)] shrink-0" />
+                      <span className="text-[var(--text-secondary)] text-sm">
+                        {item.label}
+                      </span>
                     </div>
 
                     {/* 选项或数量 */}
@@ -227,11 +217,11 @@ export function SpecialDeductionsPanel({
                               }
                             }}
                             disabled={(deductions[item.countKey!] || 0) <= 0}
-                            className="w-6 h-6 rounded bg-white/[0.06] text-white/50 hover:bg-white/10 disabled:opacity-20 flex items-center justify-center transition-colors"
+                            className="w-6 h-6 rounded border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] disabled:opacity-20 flex items-center justify-center transition-colors"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="text-white w-5 text-center text-xs font-medium">
+                          <span className="text-[var(--text-primary)] w-5 text-center text-sm font-medium font-mono">
                             {deductions[item.countKey!] || 0}
                           </span>
                           <button
@@ -246,11 +236,13 @@ export function SpecialDeductionsPanel({
                               (deductions[item.countKey!] || 0) >=
                               (item.maxCount ?? 99)
                             }
-                            className="w-6 h-6 rounded bg-white/[0.06] text-white/50 hover:bg-white/10 disabled:opacity-20 flex items-center justify-center transition-colors"
+                            className="w-6 h-6 rounded border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] disabled:opacity-20 flex items-center justify-center transition-colors"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
-                          <span className="text-white/30 text-[10px]">个</span>
+                          <span className="text-[var(--text-tertiary)] text-[10px]">
+                            个
+                          </span>
                         </div>
                       ) : (
                         <div className="flex flex-wrap gap-1">
@@ -258,11 +250,7 @@ export function SpecialDeductionsPanel({
                             <button
                               key={option.value}
                               onClick={() => onUpdate(item.key, option.value)}
-                              className={`px-2 py-0.5 rounded text-[10px] transition-all ${
-                                deductions[item.key] === option.value
-                                  ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-500/40'
-                                  : 'bg-white/[0.03] text-white/40 border border-white/[0.06] hover:bg-white/[0.06]'
-                              }`}
+                              className={`btn-chip ${deductions[item.key] === option.value ? 'active' : ''}`}
                             >
                               {option.label}
                             </button>
@@ -272,20 +260,15 @@ export function SpecialDeductionsPanel({
 
                       {/* 禁用提示 */}
                       {item.disabled && item.disabledReason && (
-                        <div className="flex items-center gap-1 text-[10px] text-white/25">
-                          <Info className="w-2.5 h-2.5" />
+                        <div className="flex items-center gap-1 text-[10px] text-[var(--text-tertiary)]">
+                          <Info className="w-3 h-3" />
                           <span>{item.disabledReason}</span>
                         </div>
                       )}
                     </div>
 
                     {/* 金额 */}
-                    <span
-                      className="text-xs font-digital font-medium w-16 text-right shrink-0"
-                      style={{
-                        color: monthlyAmount > 0 ? `${item.color}cc` : 'rgba(255,255,255,0.15)',
-                      }}
-                    >
+                    <span className="text-[var(--text-primary)] font-mono text-[13px] w-16 text-right shrink-0">
                       {monthlyAmount > 0
                         ? `¥${monthlyAmount.toLocaleString()}`
                         : '-'}
@@ -297,6 +280,6 @@ export function SpecialDeductionsPanel({
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

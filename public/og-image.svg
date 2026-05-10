@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#09090B"/>
+      <stop offset="100%" stop-color="#111113"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- 左侧装饰圆 -->
+  <circle cx="100" cy="315" r="200" fill="rgba(34,211,238,0.03)"/>
+  <circle cx="100" cy="315" r="120" fill="rgba(34,211,238,0.05)"/>
+  
+  <!-- 右侧装饰圆 -->
+  <circle cx="1100" cy="315" r="180" fill="rgba(59,130,246,0.03)"/>
+  
+  <!-- 主图标 - ¥符号 -->
+  <g transform="translate(480, 180)">
+    <rect width="240" height="240" rx="48" fill="url(#accent)" opacity="0.15"/>
+    <text x="120" y="170" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="140" font-weight="700" fill="url(#accent)">¥</text>
+  </g>
+  
+  <!-- 标题 -->
+  <text x="600" y="480" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="600" fill="#FAFAFA">税后工资计算器</text>
+  
+  <!-- 副标题 -->
+  <text x="600" y="540" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#A1A1AA">支持五险一金 · 专项扣除 · 25个城市</text>
+  
+  <!-- 底部装饰线 -->
+  <rect x="400" y="580" width="400" height="2" rx="1" fill="url(#accent)" opacity="0.3"/>
+</svg>

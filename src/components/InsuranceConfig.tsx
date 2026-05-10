@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, ChevronDown, Search, AlertCircle } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import type { InsuranceConfig as InsuranceConfigType } from '../types';
 import { CITY_PRESETS } from '../utils/constants';
 
@@ -15,10 +15,10 @@ interface InsuranceConfigProps {
 }
 
 const INSURANCE_ITEMS = [
-  { key: 'pension' as const, label: '养老保险', color: 'from-blue-500/20 to-cyan-500/20', iconColor: 'text-blue-400', accentColor: '#00D4FF' },
-  { key: 'medical' as const, label: '医疗保险', color: 'from-green-500/20 to-emerald-500/20', iconColor: 'text-green-400', accentColor: '#7B61FF' },
-  { key: 'unemployment' as const, label: '失业保险', color: 'from-yellow-500/20 to-orange-500/20', iconColor: 'text-yellow-400', accentColor: '#FF006E' },
-  { key: 'housingFund' as const, label: '住房公积金', color: 'from-purple-500/20 to-pink-500/20', iconColor: 'text-purple-400', accentColor: '#FFB800' },
+  { key: 'pension' as const, label: '养老', color: '#00D4FF' },
+  { key: 'medical' as const, label: '医疗', color: '#7B61FF' },
+  { key: 'unemployment' as const, label: '失业', color: '#FF006E' },
+  { key: 'housingFund' as const, label: '公积金', color: '#FFB800' },
 ] as const;
 
 export function InsuranceConfigPanel({
@@ -33,7 +33,6 @@ export function InsuranceConfigPanel({
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const selectedPreset = useMemo(
     () => CITY_PRESETS.find((c) => c.name === city),
@@ -45,7 +44,6 @@ export function InsuranceConfigPanel({
     return CITY_PRESETS.filter((c) => c.name.includes(searchQuery.trim()));
   }, [searchQuery]);
 
-  // 点击外部关闭下拉
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -64,8 +62,9 @@ export function InsuranceConfigPanel({
       onConfigChange('medical', preset.insuranceConfig.medical);
       onConfigChange('unemployment', preset.insuranceConfig.unemployment);
       onConfigChange('housingFund', preset.insuranceConfig.housingFund);
-      // 自动设置缴纳基数（取基数中值或当前工资）
-      const midBase = Math.round((preset.minInsuranceBase + preset.maxInsuranceBase) / 2);
+      const midBase = Math.round(
+        (preset.minInsuranceBase + preset.maxInsuranceBase) / 2,
+      );
       onBaseChange(midBase);
     }
     setIsDropdownOpen(false);
@@ -78,10 +77,8 @@ export function InsuranceConfigPanel({
     setSearchQuery('');
   };
 
-  // 百分比转换：显示值 = 内部值 * 100
   const toDisplayPercent = (val: number): string => {
     const pct = val * 100;
-    // 如果是整数则不显示小数，否则显示合理位数
     return Number.isInteger(pct) ? String(pct) : pct.toFixed(pct < 1 ? 3 : 1);
   };
 
@@ -91,7 +88,6 @@ export function InsuranceConfigPanel({
     return Math.max(0, Math.min(parsed / 100, 1));
   };
 
-  // 计算实际缴纳金额
   const calcAmount = (key: keyof InsuranceConfigType): number => {
     return base * config[key];
   };
@@ -105,32 +101,27 @@ export function InsuranceConfigPanel({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className="glass-card p-5 mb-4"
+      transition={{ duration: 0.5 }}
+      className="glass-card mb-3 overflow-hidden"
     >
-      {/* 标题栏 */}
+      {/* 折叠标题栏 - 显示总额 */}
       <div
-        className="flex items-center justify-between cursor-pointer"
+        className="flex items-center justify-between cursor-pointer px-4 py-3"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-            <Shield className="w-5 h-5 text-purple-400" />
-          </div>
-          <div>
-            <h3 className="text-white font-semibold">五险一金</h3>
-            <p className="text-white/50 text-sm">
-              {totalInsurance > 0
-                ? `每月缴纳 ¥${totalInsurance.toFixed(2)}`
-                : '个人缴纳比例配置'}
-            </p>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <span className="text-white/70 text-sm">五险一金</span>
+          {totalInsurance > 0 && (
+            <span className="text-cyan-400/80 text-sm font-digital font-medium">
+              &yen;{totalInsurance.toFixed(0)}
+            </span>
+          )}
         </div>
         <motion.div
           animate={{ rotate: isExpanded ? 180 : 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         >
-          <ChevronDown className="w-5 h-5 text-white/50" />
+          <ChevronDown className="w-4 h-4 text-white/40" />
         </motion.div>
       </div>
 
@@ -140,28 +131,30 @@ export function InsuranceConfigPanel({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="pt-4 space-y-4">
-              {/* 搜索式城市选择 */}
+            <div className="px-4 pb-4 space-y-3">
+              {/* 城市选择 */}
               <div ref={dropdownRef} className="relative">
-                <label className="text-white/70 text-sm mb-2 block">
-                  选择城市（应用预设比例与基数范围）
-                </label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
                   <input
-                    ref={searchInputRef}
                     type="text"
                     placeholder="搜索城市..."
-                    value={isDropdownOpen ? searchQuery : city === 'default' ? '默认（全国通用）' : city}
+                    value={
+                      isDropdownOpen
+                        ? searchQuery
+                        : city === 'default'
+                          ? '默认（全国通用）'
+                          : city
+                    }
                     onFocus={() => {
                       setIsDropdownOpen(true);
                       setSearchQuery('');
                     }}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="input-glow w-full h-11 pl-10 pr-4 text-sm"
+                    className="input-glow w-full h-9 pl-8 pr-3 text-xs"
                   />
                 </div>
 
@@ -172,38 +165,36 @@ export function InsuranceConfigPanel({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute z-50 mt-1 w-full max-h-56 overflow-y-auto rounded-xl border border-white/10 bg-gray-900/95 backdrop-blur-xl shadow-2xl"
+                      className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-white/10 bg-gray-900/95 backdrop-blur-xl shadow-2xl"
                     >
-                      {/* 默认选项 */}
                       <button
                         onClick={handleDefaultSelect}
-                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                        className={`w-full text-left px-3 py-2 text-xs transition-colors ${
                           city === 'default'
                             ? 'bg-cyan-500/20 text-cyan-300'
-                            : 'text-white/70 hover:bg-white/5'
+                            : 'text-white/60 hover:bg-white/5'
                         }`}
                       >
                         默认（全国通用）
                       </button>
-                      <div className="glow-line mx-2" />
                       {filteredCities.map((preset) => (
                         <button
                           key={preset.name}
                           onClick={() => handleCitySelect(preset.name)}
-                          className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                          className={`w-full text-left px-3 py-2 text-xs transition-colors ${
                             city === preset.name
                               ? 'bg-cyan-500/20 text-cyan-300'
-                              : 'text-white/70 hover:bg-white/5'
+                              : 'text-white/60 hover:bg-white/5'
                           }`}
                         >
                           <span className="font-medium">{preset.name}</span>
-                          <span className="text-white/30 ml-2 text-xs">
-                            基数 {preset.minInsuranceBase.toLocaleString()} ~ {preset.maxInsuranceBase.toLocaleString()}
+                          <span className="text-white/25 ml-1.5 text-[10px]">
+                            {preset.minInsuranceBase.toLocaleString()} ~ {preset.maxInsuranceBase.toLocaleString()}
                           </span>
                         </button>
                       ))}
                       {filteredCities.length === 0 && (
-                        <div className="px-4 py-3 text-white/40 text-sm text-center">
+                        <div className="px-3 py-2 text-white/30 text-xs text-center">
                           未找到匹配城市
                         </div>
                       )}
@@ -213,125 +204,67 @@ export function InsuranceConfigPanel({
               </div>
 
               {/* 缴纳基数 */}
-              <div>
-                <label className="text-white/70 text-sm mb-2 block">缴纳基数</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50">
-                    ¥
+              <div className="flex items-center gap-2">
+                <span className="text-white/50 text-xs shrink-0">基数</span>
+                <div className="relative flex-1">
+                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 text-xs">
+                    &yen;
                   </span>
                   <input
                     type="number"
                     value={base}
                     onChange={(e) => onBaseChange(Number(e.target.value))}
-                    className="input-glow w-full h-12 pl-10 pr-4"
+                    className="input-glow w-full h-8 pl-7 pr-3 text-xs font-digital"
                   />
                 </div>
                 {selectedPreset && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-2 flex items-center gap-2 text-xs"
-                  >
-                    <AlertCircle className="w-3.5 h-3.5 text-amber-400/70 flex-shrink-0" />
-                    <span className="text-white/40">
-                      {selectedPreset.name}允许范围：
-                      <span className="neon-text text-amber-300/80">
-                        ¥{selectedPreset.minInsuranceBase.toLocaleString()}
-                      </span>
-                      {' ~ '}
-                      <span className="neon-text text-amber-300/80">
-                        ¥{selectedPreset.maxInsuranceBase.toLocaleString()}
-                      </span>
-                      {base < selectedPreset.minInsuranceBase && (
-                        <span className="text-red-400/80 ml-1">（当前低于下限）</span>
-                      )}
-                      {base > selectedPreset.maxInsuranceBase && (
-                        <span className="text-red-400/80 ml-1">（当前超出上限）</span>
-                      )}
-                    </span>
-                  </motion.div>
+                  <span className="text-white/20 text-[10px] shrink-0">
+                    {selectedPreset.minInsuranceBase.toLocaleString()}~{selectedPreset.maxInsuranceBase.toLocaleString()}
+                  </span>
                 )}
               </div>
 
-              <div className="glow-line" />
-
-              {/* 各项保险 */}
-              <div className="space-y-3">
-                {INSURANCE_ITEMS.map((item, index) => {
+              {/* 各项保险 - 一行一个：名称 | 比例 | 金额 */}
+              <div className="space-y-1.5">
+                {INSURANCE_ITEMS.map((item) => {
                   const amount = calcAmount(item.key);
                   return (
-                    <motion.div
+                    <div
                       key={item.key}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="data-card rounded-xl p-4"
+                      className="flex items-center gap-2 h-8"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-9 h-9 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center`}
-                          >
-                            <span
-                              className={`text-xs font-bold ${item.iconColor}`}
-                            >
-                              {item.label.charAt(0)}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-white/90 text-sm font-medium">
-                              {item.label}
-                            </span>
-                            {item.key === 'housingFund' && selectedPreset && (
-                              <p className="text-white/30 text-xs">
-                                允许范围 {selectedPreset.housingFundRange.min * 100}% ~ {selectedPreset.housingFundRange.max * 100}%
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="text-right">
-                            {amount > 0 && (
-                              <span
-                                className="neon-text text-sm font-semibold block"
-                                style={{ color: item.accentColor }}
-                              >
-                                ¥{amount.toFixed(2)}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <input
-                              type="number"
-                              step="0.1"
-                              min="0"
-                              max="100"
-                              value={toDisplayPercent(config[item.key])}
-                              onChange={(e) =>
-                                onConfigChange(
-                                  item.key,
-                                  fromDisplayPercent(e.target.value),
-                                )
-                              }
-                              className="input-glow w-20 h-9 text-center text-sm"
-                            />
-                            <span className="text-white/50 text-sm">%</span>
-                          </div>
-                        </div>
+                      <span
+                        className="text-xs w-8 shrink-0"
+                        style={{ color: `${item.color}99` }}
+                      >
+                        {item.label}
+                      </span>
+                      <div className="flex items-center gap-1 flex-1 justify-end">
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          max="100"
+                          value={toDisplayPercent(config[item.key])}
+                          onChange={(e) =>
+                            onConfigChange(
+                              item.key,
+                              fromDisplayPercent(e.target.value),
+                            )
+                          }
+                          className="input-glow w-14 h-7 text-center text-xs font-digital"
+                        />
+                        <span className="text-white/30 text-[10px]">%</span>
                       </div>
-                    </motion.div>
+                      <span
+                        className="text-xs font-digital font-medium w-16 text-right shrink-0"
+                        style={{ color: `${item.color}cc` }}
+                      >
+                        {amount > 0 ? `¥${amount.toFixed(0)}` : '-'}
+                      </span>
+                    </div>
                   );
                 })}
-              </div>
-
-              {/* 合计 */}
-              <div className="glow-line" />
-              <div className="flex items-center justify-between px-2">
-                <span className="text-white/60 text-sm">五险一金合计</span>
-                <span className="neon-text text-lg font-bold" style={{ color: '#00D4FF' }}>
-                  ¥{totalInsurance.toFixed(2)} / 月
-                </span>
               </div>
             </div>
           </motion.div>

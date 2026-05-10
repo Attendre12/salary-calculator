@@ -71,4 +71,5 @@ export interface CityPreset {
   insuranceConfig: InsuranceConfig;
   maxInsuranceBase: number;
   minInsuranceBase: number;
+  housingFundRange: { min: number; max: number }; // 公积金比例范围
 }
